@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "Administration - Home";
+}
+
+<link href="~/Content/MyCss/adminIndex.css" rel="stylesheet" />
+
+<!-- Page Header -->
+<header class="masthead" style="background-image: url('/img/admin-bg.jpg')">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="site-heading">
+                    <h1>Administration</h1>
+                    <h2 class="subheading">Manage Posts and Users across the whole system</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Links -->
+<div class="container">
+    <div class="row admin-links-container">
+        <div class="col-lg-4 col-md-4 mx-auto admin-links">
+            @Html.ActionLink("Posts", "ViewAllPosts", "Post")
+        </div>
+        <div class="col-lg-4 col-md-4 mx-auto admin-links">
+            @Html.ActionLink("Members", "ViewAllMembers", "ApplicationUser")
+        </div>
+        <div class="col-lg-4 col-md-4 mx-auto admin-links">
+            @Html.ActionLink("Staff", "ViewAllStaff", "ApplicationUser")
+        </div>
+        <div class="col-lg-4 col-md-4 mx-auto admin-links">
+            @Html.ActionLink("Categories", "Index", "Category")
+        </div>
+    </div>
+</div>

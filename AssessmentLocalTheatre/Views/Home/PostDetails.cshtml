@@ -1,0 +1,73 @@
+﻿@model AssessmentLocalTheatre.Models.Post
+
+@{
+    ViewBag.Title = "Post Details";
+}
+
+<!-- Page Header -->
+<header class="masthead" style="background-image: url('/img/post-masks.jpeg')">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="post-heading">
+                    <h1>@Html.DisplayFor(model => model.Title)</h1>
+                    <h2 class="subheading">@Html.DisplayFor(model => model.Description)</h2>
+                    <span class="meta">
+                        Posted by: <a href="#">@Html.DisplayFor(model => model.Staff.Email)</a><br />
+                        Date: @Html.DisplayFor(model => model.PostDate)<br />
+                        Category: @Html.DisplayFor(model => model.Category.Name)<br />
+                    </span>
+                    <hr />
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content. -->
+@* Article tag  signifies that this is a piece of written content. Useful for accessibility purposes. *@
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <p>@Html.DisplayFor(model => model.Content)</p>
+                <button type="button" class="btn btn-primary">@Html.ActionLink("Back", "Index")</button>
+                <br />
+                <br />
+                <hr />
+            </div>
+        </div>
+    </div>
+</article>
+
+@* Comments section. *@
+<div class="col-lg-8 col-md-10 mx-auto">
+    <h1>Comments</h1>
+
+    <!-- Loop through comments and load them in a style -->
+    @foreach (var comment in Model.Comments)
+    {
+        <p>@comment.Content</p>
+        if (comment.ApplicationUser == null)
+        {
+            <p>Anonymous</p>
+        }
+        else
+        {
+            <p>@comment.ApplicationUser.Email</p>
+        }
+        <p>@comment.Date</p>
+        <a class="btn btn-primary" href="@Url.Action("EditComment", "ApplicationUser", new { id = Model.PostId }, null)">Edit</a>
+
+        <a class="btn btn-danger" href="@Url.Action("DeleteComment", "ApplicationUser" , new { id = comment.CommentId })">Delete</a>
+        <hr />
+    }
+    <br />
+    @if (User.Identity.IsAuthenticated)
+    {
+        @* How can I make this a button? *@
+        <a class="btn btn-primary" href="@Url.Action("CreateComment", "ApplicationUser", new { id = Model.PostId })">Post a Comment</a>
+    }
+    <hr />
+</div>

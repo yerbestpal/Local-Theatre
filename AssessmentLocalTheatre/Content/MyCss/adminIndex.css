@@ -1,0 +1,21 @@
+﻿/* Style links in Admin Index page. */
+.admin-links-container {
+    text-align: center;
+    margin: 0 80px;
+}
+
+.admin-links {
+    text-align: center;
+    background-color: lightgrey;
+    color: #ffffff;
+    font-size: 2em;
+    height: 100px;
+    width: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+    .admin-links * {
+        display: inline;
+    }

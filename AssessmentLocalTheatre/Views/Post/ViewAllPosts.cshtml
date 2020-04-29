@@ -1,0 +1,82 @@
+﻿@model IEnumerable<AssessmentLocalTheatre.Models.Post>
+
+<!-- Page Header -->
+<header class="masthead" style="background-image: url('/img/admin-bg.jpg')">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="site-heading">
+                    <h1>Administration</h1>
+                    <h2 class="subheading">Manage Posts</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            @Html.Partial("_Notifications")
+        </div>
+    </div>
+</div>
+
+<!-- Posts Table. -->
+<div class="container">
+    <div class="row">
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Category.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Staff.FirstName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Title)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PostDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IsApproved)
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Category.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Staff.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PostDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsApproved)
+                        @item.IsApproved
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.PostId }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.PostId }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.PostId }) |
+                        @Html.ActionLink("Approve", "Approve", new { id = item.PostId })
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>
+
+
+

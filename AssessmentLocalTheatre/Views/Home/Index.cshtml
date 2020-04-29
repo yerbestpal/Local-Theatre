@@ -1,0 +1,73 @@
+﻿@* Set model. *@
+@model IEnumerable<AssessmentLocalTheatre.Models.Post>
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<!-- Page Header -->
+<header class="masthead" style="background-image: url('/img/me.jpg')">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="site-heading">
+                    <h1>Ross!</h1>
+                    <span class="subheading">Un théâtre pour Ross, par Ross</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+
+            @* Searchbox. Searches titles.*@
+            @using (Html.BeginForm())
+            {
+                <p>
+                    Search for Posts by title: @Html.TextBox("SearchString")
+                    <input type="submit" value="Search" />
+                </p>
+            }
+
+            @* Display Posts. *@
+            @if (Model == null)
+            {
+                <div class="post-preview">
+                    <span>No items found.</span>
+                </div>
+            }
+            else
+            {
+                foreach (var post in Model)
+                {
+                    <!-- Only show approved posts. -->
+                    if (post.IsApproved)
+                    {
+                        <!-- Get all posts. -->
+                        <div class="post-preview">
+                            <a href="@Url.Action("Details", "Post", new { id = post.PostId })">
+                                <h2 class="post-title">
+                                    @Html.DisplayFor(modelItem => post.Title)
+                                </h2>
+                                <h3 class="post-subtitle">
+                                    @Html.DisplayFor(modelItem => post.Description)
+                                </h3>
+                            </a>
+                            <p class="post-meta">
+                                Posted by: <a href="#">@Html.DisplayFor(modelItem => post.Staff.Email)</a><br />
+                                Date: @Html.DisplayFor(modelItem => post.PostDate)<br />
+                                Category: @Html.DisplayFor(modelItem => post.Category.Name)<br />
+                                <hr />
+                            </p>
+                        </div>
+                    }
+                }
+            }
+        </div>
+    </div>
+</div>

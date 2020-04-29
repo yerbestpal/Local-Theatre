@@ -1,0 +1,125 @@
+﻿@model AssessmentLocalTheatre.Models.Post
+
+@{
+    ViewBag.Title = "Post Details";
+}
+
+<!-- Page Header -->
+<header class="masthead" style="background-image: url('/img/view-post-bg.jpg')">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="post-heading">
+                    <h1>@Model.Title</h1>
+                    <h2 class="subheading">@Model.Description</h2>
+                    <span class="meta">
+                        Posted By @Model.Staff.Email on @Model.PostDate
+                    </span>
+                    <span class="meta">
+                        Category: @Model.Category.Name
+                    </span>
+                    <!-- Only show approval status of Post if the logged in user is also the Post author. -->
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        if (User.Identity.Name.Equals(Model.Staff.Email))
+                        {
+                            var approval = @Model.IsApproved ? "Post Approved" : "Post not yet Approved";
+                            <span class="meta">@approval</span>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <p>@Model.Content</p>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    if (User.IsInRole("Admin"))
+                    {
+                        <p class="post-meta">
+                            @Html.ActionLink("Edit", "Edit", new { id = Model.PostId }) |
+                            @Html.ActionLink("Show All Comments", "Index")
+                        </p>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- Post Comments -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <h2>Comments</h2>
+            <!-- Get all comments tied to post. -->
+            @if (Model.Comments.Count() < 1)
+            {
+        <blockquote class="blockquote">
+            There are no comments. Be the first!
+            @Model.Comments.Count()
+            @Model.PostId
+        </blockquote>
+            }
+            else
+            {
+                foreach (var comment in Model.Comments)
+                {
+                    <p>@comment.Content</p>
+                    <p>@comment.ApplicationUser.Email - @comment.Date</p>
+                    if (Request.IsAuthenticated)
+                    {
+                        if (User.IsInRole("Admin"))
+                        {
+                            <a href="@Url.Action("Delete", "Comment" , new { id = comment.CommentId })">Delete</a>
+                        }
+                        else if (User.Identity.Name.Equals(comment.ApplicationUser.Email))
+                        {
+                            <a href="@Url.Action("Delete", "Comment" , new { id = comment.CommentId })">Delete</a>
+                        }
+                    }
+                    <hr />
+                }
+            }
+            <!-- Comment create partial view loads here. -->
+        <div id="partialview">
+            @Html.Action("Create", "Comment")
+            @*@Html.Partial("_CreateComment")*@
+        </div>
+            <input type="button" value="New Comment" class="loadPartialBtn btn btn-primary" />
+            <input type="button" value="Cancel" class="removePartialBtn btn btn-light" />
+            <br />
+            <hr />
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script type="text/javascript">
+    // Show/hide partial and buttons.
+    $(document).ready(function () {
+        $('#partialview').hide();
+        $('.removePartialBtn').hide();
+    });
+    
+    $('.loadPartialBtn').click(function () {
+        $('#partialview').show('fast');
+        $('.loadPartialBtn').hide();
+        $('.removePartialBtn').show();
+    });
+
+    $('.removePartialBtn').click(function () {
+        $('#partialview').hide('fast');
+        $('.loadPartialBtn').show();
+        $('.removePartialBtn').hide();
+    });
+</script>

@@ -80,15 +80,8 @@ namespace AssessmentLocalTheatre.Controllers
             {
                 try
                 {
-                    var names = Roles.GetUsersInRole("Member");
-                    var members = new List<ApplicationUser>();
-                    foreach (var name in names)
-                    {
-                        foreach (ApplicationUser user in context.Users)
-                        {
-                            if (user.UserName.Equals(name)) members.Add(user);
-                        }
-                    }
+                    var memberRole = context.Roles.Where(r => r.Name == "Member").SingleOrDefault();
+                    var members = context.Users.Where(u => u.Roles.Any(r => r.RoleId == memberRole.Id));
 
                     return View(members.ToList());
                 }

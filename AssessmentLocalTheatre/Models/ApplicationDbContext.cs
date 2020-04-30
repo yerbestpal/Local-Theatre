@@ -36,5 +36,7 @@ namespace AssessmentLocalTheatre.Models
         {
             return new ApplicationDbContext();
         }
+
+        public System.Data.Entity.DbSet<AssessmentLocalTheatre.Models.Staff> ApplicationUsers { get; set; }
     }
 }

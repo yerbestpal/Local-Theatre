@@ -123,7 +123,35 @@ namespace AssessmentLocalTheatre.Controllers
             return RedirectToAction("Index", "Admin");
         }
 
-
+        // GET: ApplicationUser/Edit/5
+        /// <summary>
+        /// Loads Edit view.
+        /// </summary>
+        /// <param name="id">User id.</param>
+        /// <returns>Edit view.</returns>
+        [HttpGet]
+        public ActionResult EditStaff(string id)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    Staff staff = (Staff)context.Users.Find(id);
+                    if (staff == null) return HttpNotFound();
+                    IEnumerable<string> roles = new List<string>() { "Member", "Admin", "Author" };
+                    ViewBag.Role = new SelectList(roles, staff.Role);
+                    return View(staff);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    this.AddNotification("Error loading EditStaff view: " + ex, NotificationType.WARNING);
+                    return RedirectToAction("ViewAllStaff", "ApplicationUser");
+                }
+            }
+            return RedirectToAction("ViewAllStaff", "ApplicationUser");
+        }
 
         // GET: ApplicationUser/Delete/5
         /// <summary>

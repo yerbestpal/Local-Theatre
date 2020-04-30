@@ -1,10 +1,13 @@
 ﻿using AssessmentLocalTheatre.Extensions;
 using AssessmentLocalTheatre.Models;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -22,6 +25,9 @@ namespace AssessmentLocalTheatre.Controllers
     {
         // Instance of the database.
         private ApplicationDbContext context = new ApplicationDbContext();
+
+        RoleManager<IdentityRole> roleManager;
+        UserManager<ApplicationUser> userManager;
 
         // GET: ApplicationUser
         /// <summary>
@@ -62,7 +68,7 @@ namespace AssessmentLocalTheatre.Controllers
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    this.AddNotification("Error loading Index view: " + ex, NotificationType.WARNING);
+                    this.AddNotification("Error loading ViewAllStaff view: " + ex, NotificationType.WARNING);
                     return View();
                 }
             }
@@ -88,7 +94,7 @@ namespace AssessmentLocalTheatre.Controllers
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    this.AddNotification("Error loading Index view: " + ex, NotificationType.WARNING);
+                    this.AddNotification("Error loading ViewAllMembers view: " + ex, NotificationType.WARNING);
                     return View();
                 }
             }
@@ -96,33 +102,141 @@ namespace AssessmentLocalTheatre.Controllers
         }
 
         // GET: ApplicationUser/Details/5
-        public ActionResult Details(int id)
+        /// <summary>
+        /// Loads Details view.
+        /// </summary>
+        /// <param name="id">User id.</param>
+        /// <returns>Details view.</returns>
+        public ActionResult Details(string id)
         {
-            return View();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    ApplicationUser user = context.Users.Find(id);
+                    if (user == null) return HttpNotFound();
+                    return View(user);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    this.AddNotification("Error loading Delete view: " + ex, NotificationType.WARNING);
+                    return RedirectToAction("Index", "Admin");
+                }
+            }
+            return RedirectToAction("Index", "Admin");
         }
 
-        
+        // GET: Staff/Edit/5
+        /// <summary>
+        /// Loads Edit view.
+        /// </summary>
+        /// <param name="id">Staff id.</param>
+        /// <returns>Edit view.</returns>
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public ActionResult EditStaff(string id)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    Staff staff = context.Users.Find(id) as Staff;
+                    if (staff == null) return HttpNotFound();
+
+                    return View(staff);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    this.AddNotification("Error loading EditStaff view: " + ex, NotificationType.WARNING);
+                    return RedirectToAction("ViewAllStaff", "ApplicationUser");
+                }
+            }
+            return RedirectToAction("ViewAllStaff", "ApplicationUser");
+        }
+
+        // POST: Staff/Edit/5
+        /// <summary>
+        /// Edit staff in database.
+        /// </summary>
+        /// <param name="id">Staff id.</param>
+        /// <returns>Edit view.</returns>
+
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public ActionResult EditStaff([Bind(Include = "FirstName,LastName,RegisteredAt,IsSuspended,Email,PhoneNumber,Address")] Staff staff)
+        {
+            context.Entry(staff).State = EntityState.Modified;
+            context.SaveChanges();
+            return RedirectToAction("ViewAllStaff");
+        }
 
         // GET: ApplicationUser/Delete/5
-        public ActionResult Delete(int id)
+        /// <summary>
+        /// Loads Delete view.
+        /// </summary>
+        /// <param name="id">User id.</param>
+        /// <returns>Details view.</returns>
+        public ActionResult Delete(string id)
         {
-            return View();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    ApplicationUser user = context.Users.Find(id);
+                    if (user == null) return HttpNotFound();
+                    return View(user);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    this.AddNotification("Error loading Delete view: " + ex, NotificationType.WARNING);
+                    return RedirectToAction("Index", "Admin");
+                }
+            }
+            return RedirectToAction("Index", "Admin");
         }
 
         // POST: ApplicationUser/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        /// <summary>
+        /// Remove user from database.
+        /// </summary>
+        /// <param name="id">User id.</param>
+        /// <returns>Details view.</returns>
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(string id)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
+                try
+                {
+                    ApplicationUser user = context.Users.Find(id);
+                    context.Users.Remove(user);
+                    foreach (Post post in context.Posts)
+                    {
+                        if (post.StaffId.Equals(id)) context.Posts.Remove(post);
+                    }
+                    foreach (Comment comment in context.Comments)
+                    {
+                        if (comment.ApplicationUserId.Equals(id)) context.Comments.Remove(comment);
+                    }
+                    context.SaveChanges();
+                    return RedirectToAction("Index", "Admin");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    this.AddNotification("Error removing user from database: " + ex, NotificationType.WARNING);
+                    return RedirectToAction("Details", "ApplicationUser");
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return RedirectToAction("Details", "ApplicationUser");
         }
     }
 }

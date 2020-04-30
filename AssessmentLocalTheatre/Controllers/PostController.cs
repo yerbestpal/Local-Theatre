@@ -194,7 +194,6 @@ namespace AssessmentLocalTheatre.Controllers
                     return RedirectToAction("Index");
                 }
             }
-            // Return categories to edit form.
             ViewBag.CategoryId = new SelectList(context.Categories, "CategoryId", "Name", post.CategoryId);
             this.AddNotification("You must be the post author to edit this post.", NotificationType.WARNING);
             return RedirectToAction("ViewAllPosts");

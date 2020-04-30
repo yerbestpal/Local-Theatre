@@ -153,19 +153,40 @@ namespace AssessmentLocalTheatre.Controllers
         }
 
         // POST: ApplicationUser/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        /// <summary>
+        /// Remove user from database.
+        /// </summary>
+        /// <param name="id">User id.</param>
+        /// <returns>Details view.</returns>
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(string id)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
+                try
+                {
+                    ApplicationUser user = context.Users.Find(id);
+                    context.Users.Remove(user);
+                    foreach (Post post in context.Posts)
+                    {
+                        if (post.StaffId.Equals(id)) context.Posts.Remove(post);
+                    }
+                    foreach (Comment comment in context.Comments)
+                    {
+                        if (comment.ApplicationUserId.Equals(id)) context.Comments.Remove(comment);
+                    }
+                    context.SaveChanges();
+                    return RedirectToAction("Index", "Admin");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    this.AddNotification("Error removing user from database: " + ex, NotificationType.WARNING);
+                    return RedirectToAction("Details", "ApplicationUser");
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return RedirectToAction("Details", "ApplicationUser");
         }
     }
 }

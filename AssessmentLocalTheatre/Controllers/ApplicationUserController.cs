@@ -5,6 +5,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -168,8 +169,9 @@ namespace AssessmentLocalTheatre.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public ActionResult EditStaff([Bind(Include = "FirstName,LastName,RegisteredAt,IsSuspended,Email,PhoneNumber,Address")] Staff staff)
+        public ActionResult EditStaff(Staff staff)
         {
+            staff.UserName = staff.Email;
             context.Entry(staff).State = EntityState.Modified;
             context.SaveChanges();
             return RedirectToAction("ViewAllStaff");

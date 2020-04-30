@@ -335,6 +335,8 @@
     <Content Include="Views\Category\Delete.cshtml" />
     <Content Include="Views\ApplicationUser\ViewAllStaff.cshtml" />
     <Content Include="Views\ApplicationUser\ViewAllMembers.cshtml" />
+    <Content Include="Views\ApplicationUser\Details.cshtml" />
+    <Content Include="Views\ApplicationUser\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

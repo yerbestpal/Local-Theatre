@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -62,7 +63,7 @@ namespace AssessmentLocalTheatre.Controllers
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    this.AddNotification("Error loading Index view: " + ex, NotificationType.WARNING);
+                    this.AddNotification("Error loading ViewAllStaff view: " + ex, NotificationType.WARNING);
                     return View();
                 }
             }
@@ -88,7 +89,7 @@ namespace AssessmentLocalTheatre.Controllers
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    this.AddNotification("Error loading Index view: " + ex, NotificationType.WARNING);
+                    this.AddNotification("Error loading ViewAllMembers view: " + ex, NotificationType.WARNING);
                     return View();
                 }
             }
@@ -96,17 +97,59 @@ namespace AssessmentLocalTheatre.Controllers
         }
 
         // GET: ApplicationUser/Details/5
-        public ActionResult Details(int id)
+        /// <summary>
+        /// Loads Details view.
+        /// </summary>
+        /// <param name="id">User id.</param>
+        /// <returns>Details view.</returns>
+        public ActionResult Details(string id)
         {
-            return View();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    ApplicationUser user = context.Users.Find(id);
+                    if (user == null) return HttpNotFound();
+                    return View(user);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    this.AddNotification("Error loading Delete view: " + ex, NotificationType.WARNING);
+                    return RedirectToAction("Index", "Admin");
+                }
+            }
+            return RedirectToAction("Index", "Admin");
         }
 
-        
+
 
         // GET: ApplicationUser/Delete/5
-        public ActionResult Delete(int id)
+        /// <summary>
+        /// Loads Delete view.
+        /// </summary>
+        /// <param name="id">User id.</param>
+        /// <returns>Details view.</returns>
+        public ActionResult Delete(string id)
         {
-            return View();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    ApplicationUser user = context.Users.Find(id);
+                    if (user == null) return HttpNotFound();
+                    return View(user);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    this.AddNotification("Error loading Delete view: " + ex, NotificationType.WARNING);
+                    return RedirectToAction("Index", "Admin");
+                }
+            }
+            return RedirectToAction("Index", "Admin");
         }
 
         // POST: ApplicationUser/Delete/5

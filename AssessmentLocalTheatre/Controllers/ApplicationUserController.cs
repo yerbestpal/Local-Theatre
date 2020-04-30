@@ -1,11 +1,13 @@
 ﻿using AssessmentLocalTheatre.Extensions;
 using AssessmentLocalTheatre.Models;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -23,6 +25,9 @@ namespace AssessmentLocalTheatre.Controllers
     {
         // Instance of the database.
         private ApplicationDbContext context = new ApplicationDbContext();
+
+        RoleManager<IdentityRole> roleManager;
+        UserManager<ApplicationUser> userManager;
 
         // GET: ApplicationUser
         /// <summary>
@@ -123,13 +128,14 @@ namespace AssessmentLocalTheatre.Controllers
             return RedirectToAction("Index", "Admin");
         }
 
-        // GET: ApplicationUser/Edit/5
+        // GET: Staff/Edit/5
         /// <summary>
         /// Loads Edit view.
         /// </summary>
-        /// <param name="id">User id.</param>
+        /// <param name="id">Staff id.</param>
         /// <returns>Edit view.</returns>
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public ActionResult EditStaff(string id)
         {
             if (ModelState.IsValid)
@@ -137,10 +143,9 @@ namespace AssessmentLocalTheatre.Controllers
                 try
                 {
                     if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                    Staff staff = (Staff)context.Users.Find(id);
+                    Staff staff = context.Users.Find(id) as Staff;
                     if (staff == null) return HttpNotFound();
-                    IEnumerable<string> roles = new List<string>() { "Member", "Admin", "Author" };
-                    ViewBag.Role = new SelectList(roles, staff.Role);
+
                     return View(staff);
                 }
                 catch (Exception ex)
@@ -151,6 +156,23 @@ namespace AssessmentLocalTheatre.Controllers
                 }
             }
             return RedirectToAction("ViewAllStaff", "ApplicationUser");
+        }
+
+        // POST: Staff/Edit/5
+        /// <summary>
+        /// Edit staff in database.
+        /// </summary>
+        /// <param name="id">Staff id.</param>
+        /// <returns>Edit view.</returns>
+
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public ActionResult EditStaff([Bind(Include = "FirstName,LastName,RegisteredAt,IsSuspended,Email,PhoneNumber,Address")] Staff staff)
+        {
+            context.Entry(staff).State = EntityState.Modified;
+            context.SaveChanges();
+            return RedirectToAction("ViewAllStaff");
         }
 
         // GET: ApplicationUser/Delete/5

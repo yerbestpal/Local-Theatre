@@ -16,8 +16,6 @@ namespace AssessmentLocalTheatre.Models
         [Display(Name = "Date of Birth")]
         public DateTime DateOfBirth { get; set; }
 
-        public string Role { get; set; }
-
         // Navigational properties.
 
         // Posts.

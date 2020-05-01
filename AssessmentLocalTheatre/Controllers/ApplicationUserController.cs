@@ -32,27 +32,6 @@ namespace AssessmentLocalTheatre.Controllers
 
         // GET: ApplicationUser
         /// <summary>
-        /// Loads the Index view.
-        /// </summary>
-        /// <returns>Index view.</returns>
-        public ActionResult Index()
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-
-                }
-                catch (Exception ex)
-                {
-
-                }
-            }
-            return View();
-        }
-
-        // GET: ApplicationUser
-        /// <summary>
         /// Loads the ViewAllStaff view.
         /// </summary>
         /// <returns>ViewAllStaff view.</returns>
@@ -165,16 +144,89 @@ namespace AssessmentLocalTheatre.Controllers
         /// </summary>
         /// <param name="id">Staff id.</param>
         /// <returns>Edit view.</returns>
-
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult EditStaff(Staff staff)
         {
-            staff.UserName = staff.Email;
-            context.Entry(staff).State = EntityState.Modified;
-            context.SaveChanges();
-            return RedirectToAction("ViewAllStaff");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (staff == null) return HttpNotFound();
+                    staff.UserName = staff.Email;
+                    context.Entry(staff).State = EntityState.Modified;
+                    context.SaveChanges();
+                    return RedirectToAction("ViewAllStaff");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    this.AddNotification("Error loading EditStaff view: " + ex, NotificationType.WARNING);
+                    return RedirectToAction("ViewAllStaff", "ApplicationUser");
+                }
+            }
+            return RedirectToAction("ViewAllStaff", "ApplicationUser");
+        }
+
+        // GET: ApplicationUser/Edit/5
+        /// <summary>
+        /// Loads Edit view.
+        /// </summary>
+        /// <param name="id">ApplicationUser id.</param>
+        /// <returns>Edit view.</returns>
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public ActionResult EditUser(string id)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    ApplicationUser user = context.Users.Find(id);
+                    if (user == null) return HttpNotFound();
+                    return View(user);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    this.AddNotification("Error loading EditUser view: " + ex, NotificationType.WARNING);
+                    return RedirectToAction("ViewAllMembers");
+                }
+            }
+            return RedirectToAction("ViewAllMembers");
+        }
+
+        // POST: Staff/Edit/5
+        /// <summary>
+        /// Edit ApplicationUser in database.
+        /// </summary>
+        /// <param name="id">ApplicationUser id.</param>
+        /// <returns>Edit view.</returns>
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public ActionResult EditUser(ApplicationUser user)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (user == null) return HttpNotFound();
+                    user.UserName = user.Email;
+                    context.Entry(user).State = EntityState.Modified;
+                    context.SaveChanges();
+                    return RedirectToAction("ViewAllMembers");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    this.AddNotification("Error loading EditUser view: " + ex, NotificationType.WARNING);
+                    return RedirectToAction("ViewAllMembers", "ApplicationUser");
+                }
+            }
+            return RedirectToAction("ViewAllStaff", "ApplicationUser");
         }
 
         // GET: ApplicationUser/Delete/5
@@ -239,6 +291,16 @@ namespace AssessmentLocalTheatre.Controllers
                 }
             }
             return RedirectToAction("Details", "ApplicationUser");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> ChangeRole(string id)
+        {
+
         }
     }
 }

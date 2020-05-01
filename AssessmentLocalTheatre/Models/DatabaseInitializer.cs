@@ -35,12 +35,6 @@ namespace AssessmentLocalTheatre.Models
                     roleManager.Create(new IdentityRole("Member"));
                 }
 
-                // The Suspend role stops logged in staff or users from access the website if they are suspended.
-                if (!roleManager.RoleExists("Suspended"))
-                {
-                    roleManager.Create(new IdentityRole("Suspended"));
-                }
-
                 context.SaveChanges();
 
                 // Creat usermanager object to create and store users in database.

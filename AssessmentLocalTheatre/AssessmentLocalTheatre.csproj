@@ -185,6 +185,7 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
     <Compile Include="Models\Category.cs" />
+    <Compile Include="Models\ChangeRoleViewModel.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\DatabaseInitializer.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
@@ -341,6 +342,7 @@
     <Content Include="Views\ApplicationUser\Details.cshtml" />
     <Content Include="Views\ApplicationUser\Delete.cshtml" />
     <Content Include="Views\ApplicationUser\EditStaff.cshtml" />
+    <Content Include="Views\ApplicationUser\EditUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

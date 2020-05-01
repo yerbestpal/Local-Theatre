@@ -59,7 +59,7 @@ namespace AssessmentLocalTheatre.Controllers
             {
                 // Using bootstrapNotifications package to send error message from controller to view.
                 this.AddNotification("Your account is suspended.", NotificationType.WARNING);
-                return PartialView(comment);
+                return PartialView("~/Post/Details", comment);
             }
 
             // Return Comment view if no content is present.
@@ -88,60 +88,42 @@ namespace AssessmentLocalTheatre.Controllers
 
             // Return to Post.
             return PartialView(comment);
-
-
-
-            //if (ModelState.IsValid)
-            //{
-
-            //}
-            //else
-            //{
-            //    return PartialView(comment);
-            //}
-        }
-
-        // GET: Comment/Edit/5
-        public ActionResult Edit(int id) 
-        {
-            return View();
-        }
-
-        // POST: Comment/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
         }
 
         // GET: Comment/Delete/5
-        public ActionResult Delete(int id)
+        /// <summary>
+        /// Load Delete view.
+        /// </summary>
+        /// <param name="id">Comment Id.</param>
+        /// <returns>Delete view.</returns>
+        public ActionResult Delete(int? id)
         {
-            return View();
+            if (id == null) return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest);
+            Comment comment = context.Comments.Find(id);
+            if (comment == null) return HttpNotFound();
+            return View(comment);
         }
 
         // POST: Comment/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        /// <summary>
+        /// Delete Comment from database.
+        /// </summary>
+        /// <param name="id">Comment Id.</param>
+        /// <returns></returns>
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id)
         {
             try
             {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
+                Comment comment = context.Comments.Find(id);
+                context.Comments.Remove(comment);
+                context.SaveChanges();
+                return RedirectToAction("Index", "Home");
             }
             catch
             {
-                return View();
+                return RedirectToAction("Index", "Home");
             }
         }
     }

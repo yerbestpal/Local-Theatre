@@ -22,7 +22,7 @@ namespace AssessmentLocalTheatre.Controllers
 
     // Restrict controller access to Roles.
     //[Authorize(Roles = "Admin")]
-    public class ApplicationUserController : Controller
+    public class ApplicationUserController : AccountController
     {
         // Instance of the database.
         private ApplicationDbContext context = new ApplicationDbContext();
@@ -293,14 +293,53 @@ namespace AssessmentLocalTheatre.Controllers
             return RedirectToAction("Details", "ApplicationUser");
         }
 
+        // GET: ApplicationUser/ChangeRole
         /// <summary>
-        /// 
+        /// Load ChangeRole view.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Staff Id.</param>
+        /// <returns>ChangeRole view.</returns>
         public async Task<ActionResult> ChangeRole(string id)
         {
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            Staff staff = await UserManager.FindByIdAsync(id) as Staff;
+            string oldRole = (await UserManager.GetRolesAsync(id)).Single();
+            var items = context.Roles.Select(r => new SelectListItem 
+            {
+                Text = r.Name,
+                Value = r.Name,
+                Selected = r.Name == oldRole
+            }).ToList();
+            return View(new ChangeRoleViewModel 
+            {
+                UserName = staff.UserName,
+                Roles = items,
+                OldRole = oldRole
+            });
+        }
 
+        // POST: ApplicationUser/ChangeRole
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("ChangeRole")]
+        public async Task<ActionResult> ChangeRole(string id, [Bind(Include = "Role")] ChangeRoleViewModel model)
+        {
+            if (id == User.Identity.GetUserId())
+            {
+                this.AddNotification("Error: Can't change your own role.", NotificationType.WARNING);
+                return RedirectToAction("ViewAllStaff", "ApplicationUser");
+            }
+
+            if (ModelState.IsValid)
+            {
+                Staff staff = await UserManager.FindByIdAsync(id) as Staff;
+                string oldRole = (await UserManager.GetRolesAsync(id)).Single();
+                if (oldRole == model.Role) return RedirectToAction("ViewAllRoles", "Admin");
+                await UserManager.RemoveFromRoleAsync(id, oldRole);
+                await UserManager.AddToRoleAsync(id, model.Role);
+                return RedirectToAction("ViewAllStaff", "ApplicationUser");
+            }
+            return View(model);
         }
     }
 }

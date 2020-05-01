@@ -343,6 +343,7 @@
     <Content Include="Views\ApplicationUser\Delete.cshtml" />
     <Content Include="Views\ApplicationUser\EditStaff.cshtml" />
     <Content Include="Views\ApplicationUser\EditUser.cshtml" />
+    <Content Include="Views\ApplicationUser\ChangeRole.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
